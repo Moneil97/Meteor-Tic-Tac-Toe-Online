@@ -1,0 +1,29 @@
+<body>
+{{>gameTTTUI}}
+</body>
+
+<template name = "gameTTTUI">
+
+  <h1>Tic Tac Toe!</h1>
+
+  {{> game}}
+
+</template>
+
+<template name="game">
+
+  <p><h1>{{winner}}</h1></p>
+
+  <div class="grid-container">
+   <button class="grid-item">-</button>
+   <button class="grid-item">-</button>
+   <button class="grid-item">-</button><br>
+   <button class="grid-item">-</button>
+   <button class="grid-item">-</button>
+   <button class="grid-item">-</button><br>
+   <button class="grid-item">-</button>
+   <button class="grid-item">-</button>
+   <button class="grid-item">-</button>
+  </div>
+  <br><button class = "btn-back">Back</button>
+</template>

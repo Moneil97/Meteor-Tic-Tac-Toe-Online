@@ -1,39 +1,32 @@
 import { Mongo } from 'meteor/mongo';
 
+//might need some way to stop user from clicking anything until database if fully loaded
 Game = new Mongo.Collection("game");
 
 Meteor.methods({
-  "game.play"() {
+  "getTurn"() {
 
-  }
+  },
 
 });
 
 if (Meteor.isServer){
 
-  //clear database
+  //clear database when server is restarted (not on client refresh)
   Game.remove({});
 
   Game.insert({
-    val: "hi"
-  });
-  Game.insert({
-    val: "bye"
+    turn: "X"
   });
 
   Meteor.publish('game', function myGamePublication() {
     return Game.find();
   });
 
-
 }
 
 if (Meteor.isClient){
   Meteor.subscribe("game");
 
-  //Game.insert({
-  //  val: "fuck you"
-  //});
 
-  //console.log(Game.findOne().val);
 }
