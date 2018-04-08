@@ -7,7 +7,8 @@ Template.game.onCreated(function gameOnCreated() {
 	this.flip = new ReactiveVar(0);
 	this.winner = new ReactiveVar("");
 	this.done = new ReactiveVar(0);
-
+	this.ID = new ReactiveVar(Math.floor(Math.random() * 100000));
+	this.gameID = new ReactiveVar(0);
 });
 
 Template.game.helpers({
@@ -20,30 +21,61 @@ Template.game.helpers({
 	done() {
 		return Template.instance().done.get();
 	},
+	ID() {
+		return Template.instance().ID.get();
+	},
+	gameID() {
+		return Template.instance().gameID.get();
+	},
 });
 
 Template.game.events({
-	//when any button is clicked
+
 	'click .btn-back': function () {
 		Session.set("currentView", "gameSelect");
 		return;
 	},
+	'click .btn-start'(event, instance) {
 
-	'click button'(event, instance) {
+		console.log("your user ID is: " + instance.ID.get());
+
+		if (Games.findOne({player2: -1}) === undefined){
+
+			console.log("creating a game");
+			//Meteor.call("makeGame", instance.ID.get());
+			instance.gameID.set(Meteor.apply("makeGame", [instance.ID.get()], {returnStubValue: true}));
+			console.log("gameID: " + instance.gameID.get());
+		}
+		else{
+			console.log("found a game");
+			console.log(Games.findOne({player2: -1}).player1);
+			instance.gameID.set(Games.findOne({player2: -1})._id);
+			Meteor.call("joinGame", Games.findOne({player2: -1})._id, instance.ID.get());
+		}
+
+		return;
+	},
+	'click .grid-item'(event, instance) {
 
 		if (instance.done.get()) {
 			return;
 		}
+		else{
+			Meteor.call("makeMove", instance.gameID.get(), instance.ID.get(), "boob");
+			return;
+		}
+
+		//nothing below will run
 
 		//check if it is your turn
-		if (Game.findOne({turn: "X"}) === undefined){
+		if (Games.findOne({turn: "X"}) === undefined){
 			console.log("Not your turn");
 			return;
 		}
 		else{
 			console.log("is your turn");
 			//change turn from X to O
-			Game.update(Game.findOne({turn: "X"})._id, {
+			Games.update(Games.findOne({turn: "X"})._id, {
       	$set: { turn: "O" },
     	});
 		}

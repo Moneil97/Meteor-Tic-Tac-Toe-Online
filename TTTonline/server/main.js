@@ -12,7 +12,7 @@ Meteor.methods({
     //update turn
   },
   "addJim"() {
-    Game.insert({
+    Games.insert({
       val: "jim"
     });
     console.log("added Jim");
