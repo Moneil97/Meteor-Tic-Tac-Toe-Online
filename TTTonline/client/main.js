@@ -4,24 +4,18 @@ import { ReactiveVar } from 'meteor/reactive-var';
 
 Template.game.onCreated(function gameOnCreated() {
 	this.winner = new ReactiveVar("");
-	this.ID = new ReactiveVar(Math.floor(Math.random() * 100000));
+	this.ID = new ReactiveVar(Math.floor(Math.random() * 100000)); //Replace this with ID of user account
 	this.gameID = new ReactiveVar(-1);
 	this.currentBoard = new ReactiveVar("---------");
+	this.ready = new ReactiveVar(0);
 });
 
 Template.game.helpers({
-	winner() {
-		return Template.instance().winner.get();
-	},
-	ID() {
-		return Template.instance().ID.get();
-	},
-	gameID() {
-		return Template.instance().gameID.get();
-	},
-	currentBoard() {
-		return Template.instance().currentBoard.get();
-	},
+	winner() {return Template.instance().winner.get();},
+	ID() {return Template.instance().ID.get();},
+	gameID() {return Template.instance().gameID.get();},
+	currentBoard() {return Template.instance().currentBoard.get();},
+	ready() {return Template.instance().ready.get();},
 });
 
 Template.game.events({
@@ -30,6 +24,7 @@ Template.game.events({
 		Session.set("currentView", "gameSelect");
 		return;
 	},
+
 	'click .btn-start'(event, instance) {
 
 		console.log("your user ID is: " + instance.ID.get());
@@ -50,8 +45,13 @@ Template.game.events({
 		Games.find(instance.gameID.get()).observeChanges({
 		 changed: function (id, fields) {
        console.log("changed");
-			 //check if board has changed
 			 var game = Games.findOne(id);
+
+			 //check if game is ready
+			 if (instance.ready.get() === 0 && game.player2 > 0)
+				 instance.ready.set(1);
+
+			 //check if board has changed
 			 if (game.board != instance.currentBoard.get()){
 				 console.log("board has changed");
 				 instance.currentBoard.set(game.board);
@@ -71,8 +71,10 @@ Template.game.events({
 
 		return;
 	},
+
 	'click .grid-item'(event, instance) {
-		Meteor.call("makeMove", instance.gameID.get(), instance.ID.get(), event.currentTarget.id);
+		if (instance.ready.get())
+			Meteor.call("makeMove", instance.gameID.get(), instance.ID.get(), event.currentTarget.id);
 		return;
 	},
 });

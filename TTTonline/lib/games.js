@@ -47,9 +47,8 @@ Meteor.methods({
       }
 
       var win = 0;
-      if (checkWin(brd)){
+      if (checkWin(brd))
         win = game.turn;
-      }
 
       //update board and turn
       Games.update(gameID, {
@@ -91,7 +90,7 @@ function checkWin(board){
 }
 
 function setCharAt(str,index,chr) {
-    return str.substr(0,index) + chr + str.substr(Number(index)+1);
+  return str.substr(0,index) + chr + str.substr(Number(index)+1);
 }
 
 if (Meteor.isServer){
